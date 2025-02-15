@@ -4,113 +4,151 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MDM Calculator Monthly Report</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
-    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; padding: 20px; }
+        h2 { text-align: center; color: #007bff; }
+        .container { max-width: 800px; margin: auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px; }
+        label { font-weight: bold; display: block; margin-top: 10px; }
+        input, select { width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ccc; border-radius: 5px; }
+        .download-btn { margin-top: 20px; padding: 10px 20px; background: #28a745; color: white; border: none; cursor: pointer; }
+        .download-btn:hover { background: #218838; }
+    </style>
 </head>
 <body>
-    <h1>MDM Calculator Monthly Report</h1>
-    
-    <p><strong>Created By:</strong> Manoj Bansal (9888666363)</p>
-    <p><strong>Guided By:</strong> CHT Sh. Surinder Kumar Vig</p>
 
-    <form id="mdm-form">
-        <label>Year:</label>
-        <select id="year"><script>
-                let years = ["2020", "2021", "2022", "2023", "2024", "2025", "2026", "2027", "2028", "2029", "2030", "2031"];
-                years.forEach(year => {
-                    document.write(`<option value="${year}">${year}</option>`);
-                });
+    <h2>MDM Calculator Monthly Report</h2>
+    <div class="container">
+        <p><strong>Created By:</strong> Manoj Bansal (9888666363)</p>
+        <p><strong>Guided By:</strong> CHT Sh. Surinder Kumar Vig</p>
+
+        <label>Select Year:</label>
+        <select id="year">
+            <script>
+                for (let i = 2000; i <= 2030; i++) {
+                    document.write(`<option value="${i}">${i}</option>`);
+                }
             </script>
         </select>
 
-        <label>Month:</label>
+        <label>Select Month:</label>
         <select id="month">
             <script>
-                let months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-                months.forEach(month => {
-                    document.write(`<option value="${month}">${month}</option>`);
-                });
+                const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+                months.forEach(month => document.write(`<option value="${month}">${month}</option>`));
             </script>
         </select>
 
         <label>Report Type:</label>
-        <select id="report-type">
+        <select id="reportType">
             <option value="Pre-Primary MDM Report">Pre-Primary MDM Report</option>
             <option value="Primary MDM Report">Primary MDM Report</option>
         </select>
 
         <label>Current Date and Time:</label>
-        <input type="text" id="current-datetime" readonly>
+        <input type="text" id="dateTime" readonly>
 
         <label>School Name:</label>
-        <input type="text" id="school-name">
+        <input type="text" id="schoolName">
 
         <label>School UDISE Code:</label>
-        <input type="text" id="school-code">
+        <input type="text" id="udiseCode">
 
-        <label>Price/Rate of Cooking Cost per student (₹):</label>
-        <input type="number" id="cooking-cost">
+        <label>Price/Rate of Cooking Cost per Student (₹):</label>
+        <input type="number" id="cookingCost" oninput="calculateCookingCost()">
 
         <label>MDM Students:</label>
-        <input type="number" id="mdm-students">
+        <input type="number" id="mdmStudents">
 
-        <label>Total Students Consumed MDM in month:</label>
-        <input type="number" id="students-consumed">
+        <label>Total Students Consumed MDM in Month:</label>
+        <input type="number" id="studentsConsumed" oninput="calculateCookingCost()">
 
         <label>Total Days of Wheat:</label>
-        <input type="number" id="wheat-days">
+        <input type="number" id="wheatDays">
 
         <label>Total Days of Rice:</label>
-        <input type="number" id="rice-days">
+        <input type="number" id="riceDays">
+
+        <label>Total Days MDM Served:</label>
+        <input type="number" id="mdmDays" readonly>
+
+        <label>Opening Balance of Wheat:</label>
+        <input type="number" id="openingWheat">
+
+        <label>New Wheat Stock Received:</label>
+        <input type="number" id="newWheat">
 
         <label>Number of Students Consumed Wheat in Month:</label>
-        <input type="number" id="students-wheat" oninput="calculateWheatConsumed()">
+        <input type="number" id="studentsWheat" oninput="calculateWheat()">
 
-        <label>Wheat Consumed in Month (Auto):</label>
-        <input type="text" id="wheat-consumed" readonly>
+        <label>Wheat Consumed in Month (kg):</label>
+        <input type="number" id="wheatConsumed" readonly>
 
         <label>Balance of Wheat:</label>
-        <input type="number" id="wheat-balance">
+        <input type="number" id="balanceWheat" readonly>
+
+        <label>Opening Balance of Rice:</label>
+        <input type="number" id="openingRice">
+
+        <label>New Rice Stock Received:</label>
+        <input type="number" id="newRice">
 
         <label>Number of Students Consumed Rice in Month:</label>
-        <input type="number" id="students-rice" oninput="calculateRiceConsumed()">
+        <input type="number" id="studentsRice" oninput="calculateRice()">
 
-        <label>Rice Consumed in Month (Auto):</label>
-        <input type="text" id="rice-consumed" readonly>
+        <label>Rice Consumed in Month (kg):</label>
+        <input type="number" id="riceConsumed" readonly>
 
         <label>Balance of Rice:</label>
-        <input type="number" id="rice-balance">
+        <input type="number" id="balanceRice" readonly>
 
-        <label>Opening Balance of Cooking-Cost:</label>
-        <input type="number" id="cooking-balance">
+        <label>Opening Balance of Cooking Cost:</label>
+        <input type="number" id="openingCooking">
 
-        <label>New Received Cooking-Cost:</label>
-        <input type="number" id="cooking-new">
+        <label>New Received Cooking Cost:</label>
+        <input type="number" id="newCooking">
 
-        <label>Consumed Cooking-Cost (Auto):</label>
-        <input type="text" id="cooking-consumed" readonly>
+        <label>Consumed Cooking Cost:</label>
+        <input type="number" id="consumedCooking" readonly>
 
-        <label>Balance of Cooking-Cost:</label>
-        <input type="number" id="cooking-final">
+        <button class="download-btn" onclick="downloadPDF()">Download PDF</button>
+    </div>
 
-        <label>Opening Balance of Fruit:</label>
-        <input type="number" id="fruit-opening">
+    <script>
+        function updateDateTime() {
+            document.getElementById("dateTime").value = new Date().toLocaleString();
+        }
+        setInterval(updateDateTime, 1000);
 
-        <label>New Balance Received:</label>
-        <input type="number" id="fruit-new">
+        function calculateWheat() {
+            let studentsWheat = document.getElementById("studentsWheat").value || 0;
+            let wheatConsumed = (studentsWheat * 0.1).toFixed(2);
+            document.getElementById("wheatConsumed").value = wheatConsumed;
+        }
 
-        <label>Number of Students Given Fruit:</label>
-        <input type="number" id="fruit-students" oninput="calculateFruitCost()">
+        function calculateRice() {
+            let studentsRice = document.getElementById("studentsRice").value || 0;
+            let riceConsumed = (studentsRice * 0.1).toFixed(2);
+            document.getElementById("riceConsumed").value = riceConsumed;
+        }
 
-        <label>Total Amount Spent on Fruits (Auto):</label>
-        <input type="text" id="fruit-cost" readonly>
+        function calculateCookingCost() {
+            let studentsConsumed = document.getElementById("studentsConsumed").value || 0;
+            let cookingCost = document.getElementById("cookingCost").value || 0;
+            let totalCost = (studentsConsumed * cookingCost).toFixed(2);
+            document.getElementById("consumedCooking").value = totalCost;
+        }
 
-        <label>Remaining Fruit Balance:</label>
-        <input type="number" id="fruit-balance">
+        function downloadPDF() {
+            const { jsPDF } = window.jspdf;
+            let doc = new jsPDF();
+            doc.text("MDM Calculator Monthly Report", 80, 10);
+            doc.text(`School Name: ${document.getElementById("schoolName").value}`, 10, 30);
+            doc.text(`UDISE Code: ${document.getElementById("udiseCode").value}`, 10, 40);
+            doc.text(`Total Students Consumed: ${document.getElementById("studentsConsumed").value}`, 10, 50);
+            doc.save("MDM_Report.pdf");
+        }
+    </script>
 
-        <button type="button" onclick="generatePDF()">Download PDF Report</button>
-    </form>
-
-    <script src="script.js"></script>
 </body>
 </html>
