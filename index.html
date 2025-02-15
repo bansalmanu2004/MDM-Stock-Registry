@@ -15,7 +15,13 @@
 
     <form id="mdm-form">
         <label>Year:</label>
-        <select id="year"></select>
+        <select id="year"><script>
+                let years = ["2020", "2021", "2022", "2023", "2024", "2025", "2026", "2027", "2028", "2029", "2030", "2031"];
+                years.forEach(year => {
+                    document.write(`<option value="${year}">${year}</option>`);
+                });
+            </script>
+        </select>
 
         <label>Month:</label>
         <select id="month">
